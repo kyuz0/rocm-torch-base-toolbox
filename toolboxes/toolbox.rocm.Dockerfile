@@ -189,6 +189,16 @@ RUN python3 ./rmake.py -c \
     --test_local_path $(realpath ../Tensile) \
     && cd ./build/release && make install
 
+# hipBLASLt (Built sequentially after rocBLAS to support PyTorch tensorcores)
+WORKDIR /rocm-src
+RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/hipBLASLt.git
+WORKDIR /rocm-src/hipBLASLt
+RUN ./install.sh --dependencies || true
+RUN python3 ./rmake.py -c \
+    --architecture ${ROCM_ARCH} \
+    --build_dir $(realpath ./build) \
+    && cd ./build/release && make install
+
 # RCCL
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/rccl.git
