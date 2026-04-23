@@ -57,7 +57,7 @@ WORKDIR /rocm-src/llvm-project/build
 RUN cmake -G Ninja ../llvm \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/opt/rocm/llvm \
-    -DLLVM_ENABLE_PROJECTS="clang;lld;compiler-rt" \
+    -DLLVM_ENABLE_PROJECTS="clang;lld" \
     -DLLVM_TARGETS_TO_BUILD="AMDGPU;X86" \
     -DLLVM_ENABLE_ASSERTIONS=1 \
     -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi" \
