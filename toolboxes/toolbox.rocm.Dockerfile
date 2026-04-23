@@ -156,8 +156,9 @@ RUN cmake -G Ninja .. \
     && ninja \
     && ninja install
 
-# Symlink hipcc properly
-RUN ln -s /opt/rocm/bin/hipcc /usr/local/bin/hipcc || true
+# Symlink hipcc properly and fix LLVM path derivation for HIPCC
+RUN ln -s /opt/rocm/bin/hipcc /usr/local/bin/hipcc || true && \
+    mkdir -p /opt/rocm/lib && ln -s /opt/rocm/llvm /opt/rocm/lib/llvm || true
 
 ############# Stage 4: Build Math Libraries (rocBLAS, rccl, etc) #############
 FROM build_hip AS build_math
