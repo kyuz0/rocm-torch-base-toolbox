@@ -165,10 +165,10 @@ FROM build_hip AS build_math
 ARG ROCM_VERSION
 ARG ROCM_ARCH
 
-# Switch compiler to our locally built hipcc
+# Switch compiler to our locally built hipcc and configure linkers for Fedora's lib64 mapping
 ENV CXX=/opt/rocm/bin/hipcc
 ENV CC=/opt/rocm/llvm/bin/clang
-
+ENV LIBRARY_PATH=/opt/rocm/lib64:/opt/rocm/lib:$LIBRARY_PATH
 # Tensile
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/Tensile.git
