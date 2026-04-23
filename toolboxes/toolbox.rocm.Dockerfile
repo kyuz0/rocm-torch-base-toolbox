@@ -202,6 +202,15 @@ RUN python3 ./rmake.py \
     --test_local_path $(realpath ../Tensile) \
     && cd ./build/release && make install
 
+# hipblas-common (Shared backend definitions for hipBLAS and hipBLASLt)
+WORKDIR /rocm-src
+RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/hipblas-common.git
+WORKDIR /rocm-src/hipblas-common/build
+RUN CXX=/opt/rocm/bin/hipcc cmake -G Ninja .. \
+    -DCMAKE_INSTALL_PREFIX=/opt/rocm \
+    -DCMAKE_BUILD_TYPE=Release \
+    && ninja && ninja install
+
 # hipBLASLt (Built sequentially after rocBLAS to support PyTorch tensorcores)
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/hipBLASLt.git
