@@ -124,6 +124,7 @@ WORKDIR /rocm-src/clr/build
 RUN cmake -G Ninja .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/opt/rocm \
+    -DCLR_BUILD_HIP=ON \
     -DHIP_COMMON_DIR=/rocm-src/HIP \
     -DHIP_PLATFORM=amd \
     -DLLVM_DIR=/opt/rocm/llvm/lib/cmake/llvm \
