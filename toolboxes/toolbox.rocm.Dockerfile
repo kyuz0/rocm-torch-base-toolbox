@@ -174,7 +174,7 @@ ENV LIBRARY_PATH=/opt/rocm/lib64:/opt/rocm/lib:$LIBRARY_PATH
 WORKDIR /rocm-src
 RUN git clone -b cpp_master --depth 1 https://github.com/msgpack/msgpack-c.git && \
     mkdir -p /rocm-src/msgpack-c/build && cd /rocm-src/msgpack-c/build && \
-    cmake -G Ninja .. -DCMAKE_INSTALL_PREFIX=/usr -DMSGPACK_CXX17=ON -DMSGPACK_BUILD_TESTS=OFF -DMSGPACK_BUILD_EXAMPLES=OFF && \
+    cmake -G Ninja .. -DCMAKE_INSTALL_PREFIX=/usr -DMSGPACK_CXX17=ON -DMSGPACK_BUILD_TESTS=OFF -DMSGPACK_BUILD_EXAMPLES=OFF -DMSGPACK_USE_BOOST=OFF && \
     ninja && ninja install
 
 # Tensile
