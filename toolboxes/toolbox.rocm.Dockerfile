@@ -180,11 +180,12 @@ RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/rocBLAS.
 WORKDIR /rocm-src/rocBLAS
 # Install requirements script if necessary
 RUN ./install.sh --dependencies || true
-# Invoke rmake natively targeting ROCM_ARCH
+# Invoke rmake natively targeting ROCM_ARCH and breaking chronological circular dependency
 RUN python3 ./rmake.py -c \
     --build_dir $(realpath ./build) \
     --src_path $(realpath .) \
     --architecture ${ROCM_ARCH} \
+    --no_hipblaslt \
     --test_local_path $(realpath ../Tensile) \
     && cd ./build/release && make install
 
