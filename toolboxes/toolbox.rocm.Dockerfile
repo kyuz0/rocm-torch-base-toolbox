@@ -95,16 +95,22 @@ RUN cmake -G Ninja .. \
     && ninja \
     && ninja install
 
-# COMGR
-WORKDIR /rocm-src
-RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/ROCm-CompilerSupport.git
-WORKDIR /rocm-src/ROCm-CompilerSupport/lib/comgr/build
+# COMGR (ROCm 7.x moved it into llvm-project/amd/comgr)
+WORKDIR /rocm-src/llvm-project/amd/comgr/build
 RUN cmake -G Ninja .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/opt/rocm \
     -DLLVM_DIR=/opt/rocm/llvm/lib/cmake/llvm \
     -DClang_DIR=/opt/rocm/llvm/lib/cmake/clang \
     -Dlld_DIR=/opt/rocm/llvm/lib/cmake/lld \
+    && ninja \
+    && ninja install
+
+# HIPCC (ROCm 7.x moved it into llvm-project/amd/hipcc)
+WORKDIR /rocm-src/llvm-project/amd/hipcc/build
+RUN cmake -G Ninja .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/opt/rocm \
     && ninja \
     && ninja install
 
