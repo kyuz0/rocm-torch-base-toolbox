@@ -205,18 +205,28 @@ RUN python3 ./rmake.py \
 # hipBLASLt (Built sequentially after rocBLAS to support PyTorch tensorcores)
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/hipBLASLt.git
-WORKDIR /rocm-src/hipBLASLt
-RUN ./install.sh --dependencies || true
-RUN python3 ./rmake.py \
-    --architecture ${ROCM_ARCH} \
-    --build_dir $(realpath ./build) \
-    && cd ./build/release && make install
+WORKDIR /rocm-src/hipBLASLt/build
+# Natively compile via CMake to cleanly bypass install.sh Ubuntu dependencies
+RUN cmake -G Ninja .. \
+    -DCMAKE_INSTALL_PREFIX=/opt/rocm \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DAMDGPU_TARGETS=${ROCM_ARCH} \
+    -DHIPBLASLT_BUILD_TESTING=OFF \
+    -DHIPBLASLT_ENABLE_CLIENT=OFF \
+    -DHIPBLASLT_ENABLE_SAMPLES=OFF \
+    && ninja && ninja install
 
 # RCCL
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/rccl.git
-WORKDIR /rocm-src/rccl
-RUN ./install.sh -i --amdgpu_targets ${ROCM_ARCH} || true
+WORKDIR /rocm-src/rccl/build
+# Natively compile RCCL to avoid install.sh silently failing due to missing dpkg on Fedora
+RUN CXX=/opt/rocm/bin/hipcc cmake -G Ninja .. \
+    -DCMAKE_INSTALL_PREFIX=/opt/rocm \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DAMDGPU_TARGETS=${ROCM_ARCH} \
+    -DBUILD_TESTS=OFF \
+    && ninja && ninja install
 
 # rocRAND
 WORKDIR /rocm-src
