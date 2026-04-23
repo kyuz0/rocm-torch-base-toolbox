@@ -170,9 +170,17 @@ ARG ROCM_ARCH
 ENV CXX=/opt/rocm/bin/hipcc
 ENV CC=/opt/rocm/llvm/bin/clang
 ENV LIBRARY_PATH=/opt/rocm/lib64:/opt/rocm/lib:$LIBRARY_PATH
+# msgpack-cxx (Required by Tensile for precomputed kernel serialization)
+WORKDIR /rocm-src
+RUN git clone -b cpp_master --depth 1 https://github.com/msgpack/msgpack-c.git && \
+    mkdir -p /rocm-src/msgpack-c/build && cd /rocm-src/msgpack-c/build && \
+    cmake -G Ninja .. -DCMAKE_INSTALL_PREFIX=/usr -DMSGPACK_CXX17=ON -DMSGPACK_BUILD_TESTS=OFF -DMSGPACK_BUILD_EXAMPLES=OFF && \
+    ninja && ninja install
+
 # Tensile
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/Tensile.git
+
 
 # rocBLAS
 WORKDIR /rocm-src
