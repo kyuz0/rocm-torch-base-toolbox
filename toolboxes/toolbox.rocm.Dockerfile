@@ -31,6 +31,7 @@ RUN dnf update -y && \
     mesa-libGL-devel \
     findutils \
     make \
+    vim-common \
     && dnf clean all
 
 # Enable Toolbox labels
