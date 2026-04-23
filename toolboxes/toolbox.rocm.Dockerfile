@@ -86,7 +86,7 @@ ARG ROCM_ARCH
 # ROCR-Runtime
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/ROCR-Runtime.git
-WORKDIR /rocm-src/ROCR-Runtime/src/build
+WORKDIR /rocm-src/ROCR-Runtime/build
 # Requires elfutils-libelf-devel, libdrm-devel, numactl-devel
 RUN cmake -G Ninja .. \
     -DCMAKE_BUILD_TYPE=Release \
