@@ -84,6 +84,9 @@ FROM build_devicelibs AS build_hip
 ARG ROCM_VERSION
 ARG ROCM_ARCH
 
+# Install Python deps for HIP build (using --break-system-packages for Fedora 40+)
+RUN pip3 install CppHeaderParser --break-system-packages || pip3 install CppHeaderParser
+
 # ROCR-Runtime
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/ROCR-Runtime.git
