@@ -156,9 +156,10 @@ RUN cmake -G Ninja .. \
     && ninja \
     && ninja install
 
-# Symlink hipcc properly and fix LLVM path derivation for HIPCC
+# Symlink hipcc properly and mass-map Fedora's lib64 binaries into /opt/rocm/lib for hipcc TryCompile bounds
 RUN ln -s /opt/rocm/bin/hipcc /usr/local/bin/hipcc || true && \
-    mkdir -p /opt/rocm/lib && ln -s /opt/rocm/llvm /opt/rocm/lib/llvm || true
+    mkdir -p /opt/rocm/lib && ln -s /opt/rocm/llvm /opt/rocm/lib/llvm || true && \
+    ln -s /opt/rocm/lib64/* /opt/rocm/lib/ || true
 
 ############# Stage 4: Build Math Libraries (rocBLAS, rccl, etc) #############
 FROM build_hip AS build_math
