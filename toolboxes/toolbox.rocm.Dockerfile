@@ -170,6 +170,8 @@ ARG ROCM_ARCH
 ENV CXX=/opt/rocm/bin/hipcc
 ENV CC=/opt/rocm/llvm/bin/clang
 ENV LIBRARY_PATH=/opt/rocm/lib64:/opt/rocm/lib:$LIBRARY_PATH
+# Install boost-devel required by msgpack C++ headers for endianness evaluation
+RUN dnf install -y boost-devel && dnf clean all
 # Install psutil for Tensile RAM estimation to prevent parallel compilation OOM
 RUN pip3 install psutil --break-system-packages || pip3 install psutil
 
@@ -220,7 +222,19 @@ RUN ./install.sh -i --amdgpu_targets ${ROCM_ARCH} || true
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/rocRAND.git
 WORKDIR /rocm-src/rocRAND/build
-RUN cmake -G Ninja .. -DCMAKE_INSTALL_PREFIX=/opt/rocm -DAMDGPU_TARGETS=${ROCM_ARCH} && ninja install
+RUN cmake -G Ninja .. -DCMAKE_INSTALL_PREFIX=/opt/rocm -DAMDGPU_TARGETS=${ROCM_ARCH} -DBUILD_TEST=OFF -DBUILD_BENCHMARK=OFF && ninja install
+
+# aotriton (Required as a standard backend by PyTorch for recent ROCm iterations)
+WORKDIR /rocm-src
+RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/aotriton.git
+WORKDIR /rocm-src/aotriton/build
+# AOTriton compilation natively binds Ahead-Of-Time triton kernels for local architectures
+RUN cmake -G Ninja .. \
+    -DCMAKE_INSTALL_PREFIX=/opt/rocm \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DAOTRITON_TARGET_ARCH=${ROCM_ARCH} \
+    -DAMDGPU_TARGETS=${ROCM_ARCH} \
+    && ninja && ninja install
 
 ############# Stage 5: Final Toolbox Output #############
 FROM rocm_base AS final
