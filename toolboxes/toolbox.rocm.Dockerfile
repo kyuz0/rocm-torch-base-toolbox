@@ -170,6 +170,9 @@ ARG ROCM_ARCH
 ENV CXX=/opt/rocm/bin/hipcc
 ENV CC=/opt/rocm/llvm/bin/clang
 ENV LIBRARY_PATH=/opt/rocm/lib64:/opt/rocm/lib:$LIBRARY_PATH
+# Install psutil for Tensile RAM estimation to prevent parallel compilation OOM
+RUN pip3 install psutil --break-system-packages || pip3 install psutil
+
 # msgpack-cxx (Required by Tensile for precomputed kernel serialization)
 WORKDIR /rocm-src
 RUN git clone -b cpp_master --depth 1 https://github.com/msgpack/msgpack-c.git && \
@@ -189,7 +192,7 @@ WORKDIR /rocm-src/rocBLAS
 # Install requirements script if necessary
 RUN ./install.sh --dependencies || true
 # Invoke rmake natively targeting ROCM_ARCH and breaking chronological circular dependency
-RUN python3 ./rmake.py -c \
+RUN python3 ./rmake.py \
     --build_dir $(realpath ./build) \
     --src_path $(realpath .) \
     --architecture ${ROCM_ARCH} \
@@ -202,7 +205,7 @@ WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/hipBLASLt.git
 WORKDIR /rocm-src/hipBLASLt
 RUN ./install.sh --dependencies || true
-RUN python3 ./rmake.py -c \
+RUN python3 ./rmake.py \
     --architecture ${ROCM_ARCH} \
     --build_dir $(realpath ./build) \
     && cd ./build/release && make install
