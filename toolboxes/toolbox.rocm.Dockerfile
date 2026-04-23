@@ -100,9 +100,10 @@ WORKDIR /rocm-src/llvm-project/amd/comgr/build
 RUN cmake -G Ninja .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/opt/rocm \
+    -DCMAKE_PREFIX_PATH=/opt/rocm/llvm \
     -DLLVM_DIR=/opt/rocm/llvm/lib/cmake/llvm \
     -DClang_DIR=/opt/rocm/llvm/lib/cmake/clang \
-    -Dlld_DIR=/opt/rocm/llvm/lib/cmake/lld \
+    -DLLD_DIR=/opt/rocm/llvm/lib/cmake/lld \
     && ninja \
     && ninja install
 
@@ -111,6 +112,7 @@ WORKDIR /rocm-src/llvm-project/amd/hipcc/build
 RUN cmake -G Ninja .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/opt/rocm \
+    -DCMAKE_PREFIX_PATH=/opt/rocm/llvm \
     && ninja \
     && ninja install
 
