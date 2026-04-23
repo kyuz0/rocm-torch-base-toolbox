@@ -68,10 +68,8 @@ RUN cmake -G Ninja ../llvm \
 FROM build_llvm AS build_devicelibs
 ARG ROCM_VERSION
 
-WORKDIR /rocm-src
-RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/ROCm-Device-Libs.git
-
-WORKDIR /rocm-src/ROCm-Device-Libs/build
+# ROCm 7.x moved Device-Libs into the LLVM monorepo
+WORKDIR /rocm-src/llvm-project/amd/device-libs/build
 RUN cmake -G Ninja .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/opt/rocm \
