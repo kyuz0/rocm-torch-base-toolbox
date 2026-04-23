@@ -170,8 +170,8 @@ ARG ROCM_ARCH
 ENV CXX=/opt/rocm/bin/hipcc
 ENV CC=/opt/rocm/llvm/bin/clang
 ENV LIBRARY_PATH=/opt/rocm/lib64:/opt/rocm/lib:$LIBRARY_PATH
-# Install boost-devel required by msgpack C++ headers for endianness evaluation
-RUN dnf install -y boost-devel && dnf clean all
+# Install boost-devel and libomp-devel required by msgpack and hipBLASLt C++ headers
+RUN dnf install -y boost-devel libomp-devel && dnf clean all
 # Install psutil for Tensile RAM estimation to prevent parallel compilation OOM
 RUN pip3 install psutil --break-system-packages || pip3 install psutil
 
@@ -224,6 +224,7 @@ RUN cmake -G Ninja .. \
     -DHIPBLASLT_ENABLE_CLIENT=OFF \
     -DHIPBLASLT_ENABLE_SAMPLES=OFF \
     -DHIPBLASLT_ENABLE_MARKER=OFF \
+    -DHIPBLASLT_ENABLE_ROCM_SMI=OFF \
     && ninja && ninja install
 
 # RCCL
