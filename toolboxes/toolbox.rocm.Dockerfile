@@ -119,6 +119,16 @@ RUN cmake -G Ninja .. \
     && ninja \
     && ninja install
 
+# rocprofiler-register (ROCm 7.x telemetry dependency)
+WORKDIR /rocm-src
+RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/rocprofiler-register.git
+WORKDIR /rocm-src/rocprofiler-register/build
+RUN cmake -G Ninja .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/opt/rocm \
+    && ninja \
+    && ninja install
+
 # CLR (HIP)
 WORKDIR /rocm-src
 RUN git clone --depth 1 -b rocm-${ROCM_VERSION} https://github.com/ROCm/clr.git
